@@ -324,9 +324,14 @@ $(document).ready(function() {
             $(this).remove();
         });
 	
-	let 
+	    let newLine = "\r\n"
+	    let msg = "Author : Gene Adrian V. San Luis
+	    msg += newLine;
+	    msg += "BSIT 2 - 4";
+	    msg += newLine;
+	    msg += "PUP: 2019 - 2020";
+	    alert(msg);
 	    
-	alert("Author : Gene Adrian V. San Luis  \nBSIT 2 - 4  \nPUP: 2019 - 2020");
 
         for (let i = 1; i < ganttChart_MAX; i++) {
             $("#ganttClone").clone().appendTo('#ganttDiv')
