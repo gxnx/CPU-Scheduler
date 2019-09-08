@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
+
+  <title>CPU Scheduler</title>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css" >
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
+
+  	<style>
+		.disable-select {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			-o-user-select: none;
+			user-select: none;    
+		}
+  	</style>
+</head>
+
+<!--
+					Pixels		Max Containter Width	Class Prefix
+	Extra small 	<576px		auto					.col-
+	Small 			≥576px		540px					.col-sm-
+	Medium 			≥768px		720px					.col-md-
+	Large 			≥992px		960px					.col-lg-
+	Extra large 	≥1200px		1140px					.col-xl-
+
+	No. of columns 	:	12
+	Gutter width	:	30px (15px on each side of a column)
+	Nestable		:	Yes
+	Column ordering	:	Yes
+-->
+
+<body>
+	<!--
+		<div class="container">
+		<div class="row srow">
+			<div class="col-xs-3 col-md-4 col-sm-6 scol">
+				Row 1 Col 1
+			</div>
+	
+			<div class="col-xs-9 col-md-8 col-sm-6 scol">
+				Row 1 Col 2
+			</div>
+
+		</div>
+
+		<div class="row srow justify-content-between align-items-center">
+			<div class="col-4 scol order-12">
+				Row 2 Col 1
+			</div>
+			<div class="col-4 scol align-self-start order-2">
+				Row 2 Col 2
+			</div>
+		</div>
+	</div>
+	-->
+
+	<!--<nav class="navbar navbar-dark bg-dark text-white">
+		<a class="navbar-brand" href="https://www.facebook.com/Atramentous.Gene">
+			<img src="vendor/img/logo.jpg" width="70" height="70" alt="">
+		</a>
+		<span class="h4 mb-0">Operating System <hr class="mb-0 mt-1"> CPU Scheduling</span>
+	</nav>
+	-->
+
+	<header>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+			<a class="navbar-brand" href="https://www.facebook.com/Atramentous.Gene">
+				<!--<img src="vendor/img/logo1.png" width="50" height="50" alt="">-->
+				<img src="vendor/img/logo.jpg" width="50" height="50" alt="" class="rounded-circle">
+			</a>
+			<div class="d-flex">
+				<div class="d-block d-lg-none pr-3">
+					<i id="darkMode" class="far fa-lightbulb h3 text-white pt-2"></i>
+
+					<i id="lightMode" class="d-none fas fa-lightbulb h3 text-white pt-2"></i>
+				</div>
+
+				<div>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+							<span class="navbar-toggler-icon"></span>
+						</button>
+				</div>
+			</div>
+			
+		
+			<div class="collapse navbar-collapse" id="navbarColor01">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item active">
+						<a class="nav-link" href="#">CPU Scheduler <span class="sr-only">(current)</span></a>
+					</li>
+	
+					<li class="nav-item">
+						<a class="nav-link" href="#">About</a>
+					</li>
+				</ul>
+				<!--
+					<form class="form-inline">
+						<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+						<button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+					</form>
+				-->
+			</div>
+		</nav>
+	</header>
+
+	<main role="main" class="container my-5 py-5">
+		<div>
+			<div id="mainBody">
+				<div class="d-none alert alert-danger alert-dismissible fade show" role="alert" id="alert">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+						<span class="sr-only">Close</span>
+					</button>
+					<strong>Holy guacamole!</strong> You should check in on some of those fields below.
+				</div>
+
+				<div class="d-flex bg-dark text-white">
+					<div class="col-5 col-xs-5 border border-white align-middle text-center p-2">
+						Job Name
+					</div>
+		
+					<div class="col-7 col-xs-5 border border-white align-middle text-center p-2">
+						Input
+					</div>
+				</div>
+		
+				<div id="inputBody" class="">
+					<div class="row pt-2 pb-1 m-1 d-none" id="inputClone">
+						<div class="col-5 align-self-center">
+							<div class="row p-2 justify-content-center">
+								<button type="button" name="" id="" class="my-1 col-md-2 col-xl-2 btn btn-danger btn-md deleteRow order-2 order-md-1">
+									<i class="fa fa-trash fa-lg"></i>
+								</button>
+
+			
+								<input type="text" class="my-1 col-12 col-sm-12 col-md-9 col-xl-10 form-control required order-1 order-md-2" id="job" placeholder="">
+	
+							</div>
+						</div>
+	
+						<div class="col-7 py-2">
+							<div class="row align-items-center">
+	
+								<div class="input-group py-1 col-12 col-md-6 col-xl-6">
+									<div class="input-group-prepend">
+										<span class="input-group-text">AT</span>
+									</div>
+			
+									<input type="number" class="form-control" id="at" placeholder="Arrival Time" aria-label="z">
+								</div>
+				
+								<div class="input-group py-1 col-12 col-md-6 col-xl-6">
+									<div class="input-group-prepend">
+										<span class="input-group-text">BT</span>
+									</div>
+				
+									<input type="number" class="form-control" id="bt" placeholder="Burst Time" aria-label="z">
+								</div>
+			
+								<div class="input-group py-1 col-12 col-md-6 col-xl-6">
+									<div class="input-group-prepend">
+										<span class="input-group-text pr-3 pl-3">P</span>
+									</div>
+				
+									<input type="number" class="form-control" id="prio" placeholder="Priority" aria-label="z">
+								</div>
+			
+								<div class="input-group py-1 col-12 col-md-6 col-xl-6">
+									<div class="input-group-prepend">
+										<span class="input-group-text pr-3 pl-3">L</span>
+									</div>
+				
+									<input type="number" class="form-control" id="level" placeholder="Level" aria-label="z" disabled value="0">
+								</div>
+	
+							</div>
+						</div>
+	
+					</div>
+					
+				</div>
+				
+			</div>
+	
+	
+			<!-- MENU -->
+			<div class="row m-1">
+				<div class="my-2 col-6 col-lg-2 col-xl-2">
+					<button type="button" name="" id="addRow" class="btn btn-primary btn-md btn-block">
+						Add Row <i class="fas fa-plus-circle"></i>
+					</button>
+				</div>
+	
+				<div class="my-2 col-6 col-lg-2">
+					<button type="button" name="" id="reset" class="btn btn-danger btn-md btn-block">
+						Reset <i class="pl-1 fas fa-broom"></i>
+					</button>
+				</div>
+	
+				<div class="my-2 col-12 col-lg-5 col-md-12 col-lg-8 col-xl-5" id="rrClass">
+					<div id="mlqClass">
+						<div class="input-group-prepend" id="mlqBtnContainer" style="display:none;">
+							<button type="button" name="" data-toggle="modal" data-target="#mlqModal" class="btn btn-warning btn-md ">
+								<i class="fas fa-cog"></i>
+							</button>
+						</div>
+	
+						<select class="form-control" name="" id="algorithm">
+							<option value="1">First Come First Serve</option>
+							<option value="2">Shortest Job First</option>
+							<option value="3">Non-Preemptive Priority</option>
+							<option value="4">Shortest Remaning Time First</option>
+							<option value="5">Preemptive Priority</option>
+							<option value="6" >Round Robin</option>
+							<option value="7" disabled>Multi Level Queue</option>
+							<option value="8" disabled>Multi Level Feed Back</option>
+						</select>
+					</div>
+				</div>
+	
+				
+	
+				<div class="my-2 col-12 col-md-4 col-lg-3 col-xl-2 input-group d-none">
+					<div class="input-group-prepend">
+							<span class="input-group-text">Q</span>
+					</div>
+					<input type="number" class="form-control" name="quantum" id="quantum" placeholder="Quantum" aria-label="z">
+				</div>
+	
+				<div class="my-2 col-12 col-lg-12 col-xl-3">
+					<button type="button" name="" id="compute" class="btn btn-success btn-md btn-block">
+						Start CPU Scheduling <i class="pl-1 fas fa-play"></i>
+					</button>
+				</div>
+			</div>
+
+			<!-- PRE MADE -->
+			<div class="alert alert-success alert-dismissible fade show mt-4" role="alert">
+				<h4 class="alert-heading">Sample Inputs!</h4>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				  </button>
+				<p>These buttons shall automatically enqueue/input different processes with Arrival Time, Burst Time and Priority. You can dismiss this message!</p>
+				<hr>
+				<div class="d-flex m-3">
+					<div class="col">
+						<button type="button" value="1" class="btn  btn-outline-success btn-lg btn-block sampleInput">
+							1
+						</button>
+					</div>
+	
+					<div class="col">
+						<button type="button" value="2" class="btn  btn-outline-success btn-lg btn-block sampleInput">
+							2
+						</button>
+					</div>
+	
+					<div class="col">
+						<button type="button" value="3" class="btn  btn-outline-success btn-lg btn-block sampleInput">
+							3
+						</button>
+					</div>
+	
+					<div class="col">
+						<button type="button" value="4" class="btn  btn-outline-success btn-lg btn-block sampleInput">
+							4
+						</button>
+					</div>
+	
+					<div class="col">
+						<button type="button" value="5" class="btn  btn-outline-success btn-lg btn-block sampleInput">
+							5
+						</button>
+					</div>
+				</div>
+			</div>
+			
+	
+			<!-- MLQ MODAL -->
+			<div class="modal fade" id="mlqModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">
+								<span class="d-none d-lg-block">Multi Level Queue / Multi Level Feedback Queue</span>
+								
+								<span class="d-block d-lg-none">Multi Level Queue <br> Multi Level Feedback Queue</span>
+							</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+						</div>
+						<div class="modal-body">
+							<div>
+								<div class="d-flex bg-dark text-white">
+									<div class="col-12 col-lg-6 border border-white align-middle text-center p-2">
+										<span class="d-none d-lg-block">Algorithm</span>
+										<span class="d-block d-lg-none">Inputs</span>
+
+									</div>
+						
+									<div class="col-lg-6 d-none d-lg-block border border-white align-middle text-center p-2">
+										Inputs
+									</div>
+								</div>
+						
+								<div id="mlqBody">
+									<div class="row py-2 d-none align-items-center m-1" id="mlqInput">
+										<div class="my-2 col-12 col-lg-6 input-group">
+											<div class="input-group-prepend">
+												<button type="button" name="" class="btn btn-danger btn-block mlqDeleteRow">
+													<i class="fa fa-trash px-1" aria-hidden="true"></i>
+												</button>
+											</div>
+											
+											<select class="form-control .mlq_algorithm" name="" id="mlq_algorithm">
+												<option value="1">First Come First Serve</option>
+												<option value="2">Shortest Job First</option>
+												<option value="3">Non-Preemptive Priority</option>
+												<option value="4">Shortest Remaning Time First</option>
+												<option value="5">Preemptive Priority</option>
+												<option value="6">Round Robin</option>
+											</select>
+										</div>
+	
+										<div class="col-12 col-lg-6">
+											<div class="row">
+												<div class="my-2 col-12 input-group">
+													<div class="input-group-prepend">
+														<span class="input-group-text ">
+															<div class="d-block d-sm-none">
+																P
+															</div>
+			
+															<div class="d-none d-sm-block">
+																Priority
+															</div>
+														</span>
+													</div>
+							
+													<select class="form-control" name="" id="mlq_prio">
+														<option value="1">High</option>
+														<option value="2">Mid</option>
+														<option value="3">Low</option>
+													</select>
+												</div>
+			
+												<div class="my-2 col-12 input-group">
+													<div class="input-group-prepend">
+														<span class="input-group-text ">
+															<div class="d-block d-sm-none">
+																L
+															</div>
+			
+															<div class="d-none d-sm-block">
+																Level
+															</div>
+														</span>
+													</div>
+							
+													<input type="number" class="form-control" name="" id="mlq_level" aria-describedby="helpId" placeholder="Level">
+												</div>
+		
+												<div class="d-none my-2 col-12 input-group" id="quantumContainer">
+													<div class="input-group-prepend">
+														<span class="input-group-text ">
+															Quantum
+														</span>
+													</div>
+							
+													<input type="number" class="form-control" name="" id="mlq_quantum" aria-describedby="helpId" placeholder="Quantum">
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+	
+							<div class="row">
+								<div class="col-6">
+									<button type="button" name="" id="mlqAddRow" class="btn btn-primary btn-md btn-block">
+										Add Row <i class="fas fa-plus-circle"></i>
+									</button>
+								</div>
+	
+								<div class="col-6">
+									<button type="button" name="" id="resetMLQ" class="btn btn-danger btn-md btn-block">
+										Reset <i class="pl-1 fas fa-broom"></i>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<!--<button type="button" class="btn btn-primary">Save</button>-->
+						</div>
+					</div>
+				</div>
+			</div>
+	
+			<!-- MULTI ROWS MODAL -->
+			<div class="modal fade" id="rowModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Modal title</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+						</div>
+						<div class="modal-body">
+							Body
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-primary">Save</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<!-- RESULT MODAL -->
+			<div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">CPU Scheduling Result</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+						</div>
+						<div class="modal-body">
+							<div>
+								<div class="d-flex bg-dark text-white">
+									<div class="col-6 border border-white p-2 text-center">
+										Job Name
+									</div>
+
+									<div class="col-3 border border-white p-2 text-center">
+										TT
+									</div>
+
+									<div class="col-3 border border-white p-2 text-center">
+										WT
+									</div>
+								</div>
+							</div>
+
+							<div id="gtBody">
+								<div class="d-none" id="gtRowClone">
+									<div class="col-6 border border-black p-2 text-center" id="job">
+										A
+									</div>
+
+									<div class="col-3 border border-black p-2 text-center" id="tt">
+										21
+									</div>
+
+									<div class="col-3 border border-black p-2 text-center" id="wt">
+										22
+									</div>
+								</div>
+
+
+							</div>
+							
+							<div class="overflow-auto mb-3">
+								<div id="ganttDiv" class="d-flex my-2 mx-2">
+									<div class="d-flex align-items-center pr-1">
+										<div class="d-flex flex-column text-center mt-3">
+												<hr style="width: 1px; border-top: 50px solid white; ; text-align: center; margin: auto;" />
+											<span>0</span>
+										</div>
+									</div>
+								
+									<div id="ganttClone" class="d-none align-items-center pl-1 disable-select">
+										<span id="name" class="h1">
+											A
+										</span>
+
+										<span id="bt" class="pl-1 pt-2 text-danger">
+											12
+										</span>
+
+										<div class="d-flex flex-column text-center mt-3 pl-1">
+											<hr style="width: 1px; border-top: 50px solid white; ; text-align: center; margin: auto;" />
+											<span id="et">
+												12
+											</span>
+										</div>
+									</div>
+
+
+								
+								</div>
+							</div>
+
+							<div id="bTchartContainer">
+								<canvas id="burstTimeChart" width="400" height="240"></canvas>
+							</div>
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<!--
+								<button type="button" class="btn btn-primary">Save</button>
+							-->
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</main>
+
+	<nav class="navbar fixed-bottom navbar-dark bg-dark text-white justify-content-center">
+		Copyright © 2019 <a href = "mailto: geneadriansanluis.gasl@gmail.com" class="pl-2">Gene Adrian San Luis</a>
+	</nav>
+</body>
+
+	<script src="vendor/jquery/jquery.js"></script>
+	<script src="vendor/jquery/jquery.pressAndHold.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="vendor/darkmode/darkreader.js"></script>
+	<script src="vendor/chart/Chart.min.js"></script>
+	<script src="vendor/jscookie/js.cookie.min.js"></script>
+	<script src="core.js"></script>
+
+</html>
+

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>CPU Scheduling</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+	<div class="container">
+	  <a class="navbar-brand" href="#">CPU Scheduling</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <!--
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+		<ul class="navbar-nav ml-auto">
+		  <li class="nav-item active">
+			<a class="nav-link" href="#">Home
+			  <span class="sr-only">(current)</span>
+			</a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" href="#">About</a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" href="#">Services</a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" href="#">Contact</a>
+		  </li>
+		</ul>
+	  </div>
+      -->
+	</div>
+  </nav>
+
+  <!-- Page Content -->
+  <div class="container">
+	<div class="row">
+		<div class="col-lg-12 text-center">
+			<!--<h1 class="mt-5">CPU Scheduling</h1>-->
+
+			<table class="table table-bordered table-hover mt-5">
+				<thead class="thead-dark">
+					<tr>
+						<th>Job Name</th>
+						<th>Arrival Time</th>
+						<th>Burst Time</th>
+						<th>Priority</th>
+						<th colspan="2">Level</th>
+					</tr>
+				</thead>
+				<tbody id="inputBody">
+					<tr id="inputClone" style="visibility: collapse">
+						<td>
+							<input type="text" class="form-control required" name="job" placeholder="">
+						</td>
+
+						<td>
+							<input type="number" class="form-control required" name="at" placeholder="">
+						</td>
+
+						<td>
+							<input type="number" class="form-control required" name="bt" placeholder="">
+						</td>
+
+						<td>
+							<input type="number" class="form-control required" name="prio" placeholder="">
+						</td>
+
+						<td>
+							<input type="number" class="form-control " name="level" placeholder="">
+						</td>
+
+						<td>
+							<button type="button" name="" id="" class="btn btn-danger btn-md btn-block">
+									<i class="fa fa-trash fa-lg deleteRow"></i>
+							</button>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+
+		</div>
+
+		<div class="col-2">
+				<button type="button" name="" id="addRow" class="btn btn-primary btn-lg btn-block">Add New Row</button>
+		</div>
+
+		<div class="col-2">
+			<button type="button" name="" id="deleteRows" class="btn btn-danger btn-lg btn-block">Reset</button>
+		</div>
+
+		<div class="col-3 pt-1">
+			<div class="form-group">
+				<select class="form-control" name="" id="algorithm">
+  				<option value="1">First Come First Serve</option>
+  				<option value="2">Shortest Job First</option>
+  				<option value="3">Non-Preemptive Priority</option>
+  				<option value="4">Shortest Remaning Time First</option>
+  				<option value="5">Preemptive Priority</option>
+  				<option value="6">Round Robin</option>
+                <option value="7">Multi Level Queue</option>
+                <option value="8">Multi Level Feed Back</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="col-2 pt-1">
+		<div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">q</span>
+            </div>
+            <input type="number" class="form-control" id="quantum" placeholder="Quantum" aria-label="z">
+        </div>
+		</div>
+
+		<div class="col-3">
+			<button type="button" name="" id="compute" class="btn btn-success btn-lg btn-block">Start CPU Scheduling</button>
+		</div>
+
+		<!-- Button trigger modal -->
+
+        <div class="d-flex col-12" id="mlqDiv" style="visibility: collapse;">
+            <div class="col-3">
+
+            </div>
+            <div class="col-6">
+                <table class="table table-bordered table-hover table-responsive-md table-sm">
+                  <thead class="thead-dark">
+                    <th>Algorithm</th>
+                    <th>Priority</th>
+                    <th>Level</th>
+                  </thead>
+
+                  <tbody>
+                        <tr style="">
+                            <td>
+                    				<select class="form-control" name="" id="ml_algo">
+                      				<option value="1">First Come First Serve</option>
+                      				<option value="2">Shortest Job First</option>
+                      				<option value="3">Non-Preemptive Priority</option>
+                      				<option value="4">Shortest Remaning Time First</option>
+                      				<option value="5">Preemptive Priority</option>
+                      				<option value="6">Round Robin</option>
+                    				</select>
+                            </td>
+
+                            <td>
+                    				<select class="form-control" name="" id="ml_prio">
+                      				<option value="1">High</option>
+                      				<option value="2">Mid</option>
+                      				<option value="3">Low</option>
+                    				</select>
+                            </td>
+
+                            <td>
+                                  <select class="form-control" name="" id="ml_level">
+                        				<option value=""></option>
+                  				</select>
+                            </td>
+                        </tr>
+
+                  </tbody>
+                </table>
+
+                <div class="">
+                    
+                </div>
+            </div>
+            <div class="col-3">
+
+            </div>
+        </div>
+
+		<div class="col-12 d-flex text-center">
+			<div class="col-2 p-2">
+				<button type="button" value="0" class="btn btn-primary btn-lg btn-block sampleInput">1</button>
+			</div>
+
+			<div class="col-2 p-2">
+				<button type="button" value="1"  class="btn btn-primary btn-lg btn-block sampleInput">2</button>
+			</div>
+
+			<div class="col-2 p-2">
+				<button type="button" value="2"  class="btn btn-primary btn-lg btn-block sampleInput">3</button>
+			</div>
+
+			<div class="col-2 p-2">
+				<button type="button" value="3"  class="btn btn-primary btn-lg btn-block sampleInput">4</button>
+			</div>
+
+			<div class="col-2 p-2">
+				<button type="button" value="4"  class="btn btn-primary btn-lg btn-block sampleInput">5</button>
+			</div>
+
+			<div class="col-2 p-2">
+				<button type="button" value="5"  class="btn btn-primary btn-lg btn-block sampleInput">6</button>
+			</div>
+		</div>
+
+		<!--
+			<div class="col-12">
+			<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#ganttModal">
+				Launch
+			</button>
+			</div>
+		-->
+
+		<!-- Modal -->
+		<div class="modal fade" id="ganttModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">CPU Scheduling Table & Gantt Chart</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+					</div>
+					<div class="modal-body">
+						<table class="table table-bordered table-hover table-responsive-md">
+							<thead class="thead-dark">
+								<th>Job Name</th>
+								<th>Turn-around Time</th>
+								<th>Waiting Time</th>
+							</thead>
+
+							<tbody id="gtBody">
+								<tr id="gtRowClone" style="visibility: collapse;">
+									<td id="job" class="font-weight-bold">
+
+									</td>
+
+									<td id="tt">
+
+									</td>
+
+									<td id="wt">
+
+									</td>
+								</tr>
+
+							</tbody>
+						</table>
+
+						<div class="container mt-2">
+							<div class="row" id="ganttDiv" style="overflow-x: auto; white-space: nowrap;">
+							</div>
+						</div>
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<!--<button type="button" class="btn btn-primary">Save</button>-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+  </div>
+
+
+
+</div>
+</div>
+
+    <div style="visibility: collapse">
+        <div id="ganttClone" class="d-flex mt-2" style=" visibility: collapse;">
+            <div class="d-flex">
+                <div id="name" class="h1 name">
+                    A
+                </div>
+
+                <div id="bt" class="h5 pl-1 pt-4 text-danger">
+                    1
+                </div>
+            </div>
+
+            <div id = "et" class="pl-2 pt-5 pr-2">
+                1
+            </div>
+        </div>
+    </div>
+
+
+  </div>
+</body>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="core.js"></script>
+
+</html>
