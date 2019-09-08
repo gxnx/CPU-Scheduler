@@ -324,8 +324,8 @@ $(document).ready(function() {
             $(this).remove();
         });
 	
-	    let newLine = "\r\n"
-	    let msg = "Author : Gene Adrian V. San Luis
+	    let newLine = "\r\n";
+	    let msg = "Author : Gene Adrian V. San Luis";
 	    msg += newLine;
 	    msg += "BSIT 2 - 4";
 	    msg += newLine;
