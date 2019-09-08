@@ -324,7 +324,9 @@ $(document).ready(function() {
             $(this).remove();
         });
 	
-	alert("Author : Gene Adrian V. San Luis  -   BSIT 2 - 4   (PUP: 2019 - 2020)");
+	let 
+	    
+	alert("Author : Gene Adrian V. San Luis  \nBSIT 2 - 4  \nPUP: 2019 - 2020");
 
         for (let i = 1; i < ganttChart_MAX; i++) {
             $("#ganttClone").clone().appendTo('#ganttDiv')
